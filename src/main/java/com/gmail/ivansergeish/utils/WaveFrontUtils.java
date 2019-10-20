@@ -1,16 +1,14 @@
 package com.gmail.ivansergeish.utils;
 
-import java.awt.Point;
+import java.io.ByteArrayOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +70,6 @@ public class WaveFrontUtils {
     			
     			//TODO convert face to new format
     		}
-    		//TODO 
     	}
     	return null;
     }
@@ -88,13 +85,6 @@ public class WaveFrontUtils {
     	return result;
     } 
     
-    private static List<String> readAllVertexesOfObject(BufferedReader reader,
-    		String objName) {
-    	
-
-    	
-    	return null;
-    } 
     /**
      * The method is intended to find all the vertexes in file by their numbers
      * @param fName
@@ -119,7 +109,6 @@ public class WaveFrontUtils {
 			
     	while(!stop) {
     		String str = reader.readLine();
-    		char ch = str.charAt(0);
     		if (str != null && 
     				str.charAt(0) == 'v') {
     			index++;
@@ -132,9 +121,6 @@ public class WaveFrontUtils {
     			stop = true;
     		}
     	}
-//    	result.sort((Object o1, Object o2) -> {
-//    		return (Integer)o2 - (Integer)o1;
-//    	});
     	return result;
     }
     /**
@@ -167,7 +153,6 @@ public class WaveFrontUtils {
     		return null;
     	}
     	String[] strs = face.split(" ");
-    	//Arrays.asList(a)
     	List<Integer> items = new ArrayList();
     	for (int i = 1; i < strs.length; i++) {
     		items.add(Integer.parseInt(strs[i]));
@@ -263,22 +248,6 @@ public class WaveFrontUtils {
     }
     
     /**
-     * 
-     * @param goalObjectWasAllreadyMeet
-     * @param itIsAnotherObject
-     * @return
-     */
-//    boolean checkEndOfObject(boolean goalObjectWasAllreadyMeet, 
-//    		boolean itIsAnotherObject) {
-//    	if (!goalObjectWasAllreadyMeet) {
-//    		return false;
-//    	}
-//    	if (itIsAnotherObject) {
-//    		return true;
-//    	}
-//    	return false;
-//    }
-    /**
      * The method is looking for a string like 'o Plane.023'
      * @param str
      * @return second part of string if it is or null
@@ -303,7 +272,6 @@ public class WaveFrontUtils {
     public void writeToFile(String fName, WaveFrontObject object) throws IOException {
     	File file = new File(fName);    	
     	BufferedWriter writer = Files.newBufferedWriter(file.toPath());
-    	    	
     	for (String headStr : object.getHead()) {
     		writer.write(headStr);
     		writer.newLine();
@@ -327,6 +295,40 @@ public class WaveFrontUtils {
     	}
     	writer.flush();
     }
+    
+    //TODO Please refactor me!
+    public byte[] writeToByteArray(WaveFrontObject object) throws IOException {
+    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    	OutputStreamWriter writer = new OutputStreamWriter(stream);  	
+    	for (String headStr : object.getHead()) {
+    		writer.write(headStr);
+    		//writer.newLine();
+    	}
+    	writer.write("o " + object.getName());
+    	for (String vertex : object.getVertexes()) {
+    		//writer.newLine();
+    		writer.write(vertex);
+    	}    	
+    	for (FacesUseMaterial faceMaterial : object.getFaces()) {
+    		//writer.newLine();
+    		writer.write("usemtl " + faceMaterial.getUsemtl());
+    		for (String head : faceMaterial.getHead()) {
+        		//writer.newLine();
+        		writer.write(head);    			
+    		}
+    		for (String face : faceMaterial.getFaces()) {
+        		//writer.newLine();
+        		writer.write(face);    			
+    		}
+    	}
+    	writer.flush();
+    	byte[] result = stream.toByteArray();
+    	writer.close();
+    	stream.close();
+    	return result;
+    	
+    }
+    
     
     public Point3D calcCenterMass(List<String> vertexes) {
     	Point3D point = vertexes.stream().map((String vertex) -> {
@@ -391,5 +393,11 @@ public class WaveFrontUtils {
     		return false;
     	}
     	return true;
-    } 
+    }
+    
+	public byte[] readMaterialsFile(String fName) throws IOException {
+    	File file = new File(fName);
+    	return Files.readAllBytes(file.toPath());
+		
+	}
 }

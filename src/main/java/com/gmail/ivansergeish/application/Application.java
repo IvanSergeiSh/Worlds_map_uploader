@@ -11,12 +11,17 @@ import com.gmail.ivansergeish.statemachine.event.Event;
 
 public class Application {
 	public static void main(String[] args) {
-		ApplicationContext context = new AnnotationConfigApplicationContext(StateMachineConfig.class);
+		ApplicationContext context = new AnnotationConfigApplicationContext(StateMachineConfig.class, JpaConfig.class, ServiceConfig.class);
+		if (args.length < 1) {
+			throw new IllegalArgumentException("No filename in commandline");
+		}
+		String fName = args[0];
 		Reader reader = context.getBean(Reader.class);
+		StateMachineConfig stateMachine = context.getBean(StateMachineConfig.class);
+		stateMachine.setfName(fName);
 		try {
-			reader.readFile("/home/ivan/projects/projects/ObjFileLoader/src/test/resources/cottage2.obj");
+			reader.readFile(fName);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
