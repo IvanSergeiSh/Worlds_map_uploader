@@ -5,7 +5,11 @@ import java.util.List;
 
 public class WaveFrontObject {
 	private Point3D position;
-
+    private double alphaOZ;
+    private double bettaOY;
+    private double scale;
+    private String materialsFileName;
+    
 	private List<String> head;
 	private String name;
     private List<String> vertexes;
@@ -55,6 +59,30 @@ public class WaveFrontObject {
 	}
 	public void setPosition(Point3D position) {
 		this.position = position;
+	}
+	public String getMaterialsFileName() {
+		return materialsFileName;
+	}
+	public void setMaterialsFileName(String materialsFileName) {
+		this.materialsFileName = materialsFileName;
+	}
+	public double getAlphaOZ() {
+		return alphaOZ;
+	}
+	public void setAlphaOZ(double alphaOZ) {
+		this.alphaOZ = alphaOZ;
+	}
+	public double getBettaOY() {
+		return bettaOY;
+	}
+	public void setBettaOY(double bettaOY) {
+		this.bettaOY = bettaOY;
+	}
+	public double getScale() {
+		return scale;
+	}
+	public void setScale(double scale) {
+		this.scale = scale;
 	}
     
     

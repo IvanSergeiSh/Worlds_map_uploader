@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.action.Action;
@@ -20,9 +21,15 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 import com.gmail.ivansergeish.dto.FacesUseMaterial;
 import com.gmail.ivansergeish.dto.Point3D;
 import com.gmail.ivansergeish.dto.WaveFrontObject;
+import com.gmail.ivansergeish.service.ObjectDBService;
 import com.gmail.ivansergeish.statemachine.event.Event;
 import com.gmail.ivansergeish.statemachine.state.State;
 import com.gmail.ivansergeish.utils.WaveFrontUtils;
+
+import repository.DescriptionRepository;
+import repository.GeometryRepository;
+import repository.LocationRepository;
+import repository.MaterialRepository;
 
 @Configuration
 @ComponentScan({"com.gmail.ivansergeish.reader", "com.gmail.ivansergeish.utils"})
@@ -41,8 +48,19 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 	
 	private String currentFacesGroup;
 	
-	private String fName = "/home/ivan/projects/projects/ObjFileLoader/src/test/resources/cottage2.obj";
-    @Override
+    private byte[] mtlFileBytes;
+	
+	@Autowired
+	private ObjectDBService service;;
+	
+	private String fName;
+    //@Override
+
+	public String getfName() {
+		return fName;
+	}
+
+	public StateMachineConfig() {}
     
     public void configure(final StateMachineConfigurationConfigurer<State, Event> config) throws Exception {
         config
@@ -177,11 +195,9 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			object = new WaveFrontObject();
 			object.setHead(head);
 			object.setName(utils.getObjectName(context.getEvent().getValue()));
-			//objects.put(object.getName(), object);
-			//currentObjectName = object.getName();
 		};
     }
-    
+
     private Action<State, Event> newObjectAction() {
     	//TODO process old object, save it and create a new one
 		return context -> {
@@ -226,28 +242,34 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			}
 			object.setVertexes(vertexes);
 			//TODO save object to database !!!!!!!!!!
-			//TODO save object name to object names list
+			//geometryRepository.save(entities)
+			try {
+				service.save(object, fName, mtlFileBytes);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+				//TODO save object name to object names list
 			//TODO check all the uploaded objects for equility
 			//utils.getNewFaceRepresentation(vertexesNums, faceVertexes)
 			//utils.getVertexIndexesFromString(str)
-			System.out.println("new object");
 			List<String> head = object.getHead();
+			String mtlFileName = object.getMaterialsFileName();
 			object = new WaveFrontObject();
 			object.setHead(head);
 			object.setName(utils.getObjectName(context.getEvent().getValue()));
+			object.setMaterialsFileName(mtlFileName);
 		};
     }
+    
     private Action<State, Event> firstVertexAction() {  
 		return context -> {
-			System.out.println("first vertex");
-				//log.warn("DEPLOYING: {}",context.getEvent());
 		};
     }
     private Action<State, Event> newVertexAction() {  
     	
 		return context -> {
 			System.out.println("new vertex");
-				//log.warn("DEPLOYING: {}",context.getEvent());
 		};
     }    
     private Action<State, Event> facesGroupAction() {  
@@ -255,15 +277,12 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			facesGroup = new FacesUseMaterial();
 			facesGroup.setUsemtl(utils.getUseMtlName(context.getEvent().getValue()));
 			object.getFaces().add(facesGroup);
-			//currentFacesGroup = facesGroup.getUsemtl();
-			System.out.println("faces group Action");
 		};
     }
     private Action<State, Event> unknownStrAction() {  
 		return context -> {
 			facesGroup.getHead().add(context.getEvent().getValue());
 			System.out.println(" unknown str");
-				//log.warn("DEPLOYING: {}",context.getEvent());
 		};
     }
     private Action<State, Event> newFaceAction() {  
@@ -281,12 +300,20 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
     private Action<State, Event> addObjectHead() {
 		return context -> {
 			object.getHead().add(context.getEvent().getValue());
+			if (context.getEvent().getValue().contains("mtllib")) {
+				object.setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
+			    try {
+					mtlFileBytes = utils.readMaterialsFile(object.getMaterialsFileName());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			System.out.println("object head");
 		};    	
     }
 	public WaveFrontObject getObject() {
 		return object;
 	}
-	
 	
 }

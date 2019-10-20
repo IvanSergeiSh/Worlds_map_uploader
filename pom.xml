@@ -6,6 +6,11 @@
     <groupId>com.gmail.ivansergeish</groupId>
     <artifactId>worlds-obj-reader</artifactId>
     <version>1.0</version>
+	<properties>
+		<!-- set up java 8 -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+    	<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>    
 
     <dependencies>
     <dependency>
@@ -13,7 +18,7 @@
         <artifactId>spring-statemachine-core</artifactId>
         <version>2.1.3.RELEASE</version>
     </dependency>
-    		<dependency>
+    	<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>5.0.5.RELEASE</version>		
@@ -23,7 +28,39 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>5.0.5.RELEASE</version>		
-		</dependency>    
+		</dependency>
+		<!--  -->
+		<dependency>
+		    <groupId>com.gmail.ascanada52</groupId>
+			<artifactId>object-loader</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.gmail.ascanada52</groupId>
+			<artifactId>map-loader</artifactId>
+			<version>1.0.0</version>
+		</dependency> 
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-entitymanager</artifactId>
+		    <version>4.3.10.Final</version>
+		    <!-- License GNU Lesser General Public License
+			http://www.gnu.org/licenses/lgpl-2.1.html 
+			version 4.3.10.Final -->
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+			<!-- License Apache 2.0 -->
+		</dependency>
+		<!-- Database driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4.1209.jre7</version>
+			<!-- License: http://www.postgresql.org/about/licence/ -->
+		</dependency>		
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -31,19 +68,4 @@
         </dependency>
         
     </dependencies>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
-<!-- 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
--->
 </project>
