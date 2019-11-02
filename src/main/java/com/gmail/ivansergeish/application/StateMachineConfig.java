@@ -188,13 +188,15 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
                    .event(Event.EOF)
                    .action(eofAction());
     }
+    
     private Action<State, Event> firstObjectAction() {  
 		return context -> {
 			System.out.println("first object");
 			List<String> head = object.getHead();
 			object = new WaveFrontObject();
 			object.setHead(head);
-			object.setName(utils.getObjectName(context.getEvent().getValue()));
+			String name = utils.getObjectName(context.getEvent().getValue());
+			object.setName(name.replace('.', '_'));
 		};
     }
 
@@ -257,8 +259,10 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			String mtlFileName = object.getMaterialsFileName();
 			object = new WaveFrontObject();
 			object.setHead(head);
-			object.setName(utils.getObjectName(context.getEvent().getValue()));
+			//object.setName(utils.getObjectName(context.getEvent().getValue()));
 			object.setMaterialsFileName(mtlFileName);
+			String name = utils.getObjectName(context.getEvent().getValue());
+			object.setName(name.replace('.', '_'));			
 		};
     }
     
@@ -304,12 +308,15 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 				object.setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
 			    try {
 					mtlFileBytes = utils.readMaterialsFile(object.getMaterialsFileName());
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			
 			System.out.println("object head");
+			System.out.println("mtlFileBytes length = " + mtlFileBytes.length);
 		};    	
     }
 	public WaveFrontObject getObject() {

@@ -48,7 +48,7 @@ public class ObjectDBService {
         Description description = 
         		getDescriptionForSingleRadius(location.getObjectId(), name, ObjectType.THREE_D_OBJECT, 1);
         descriptionRepository.save(description);
-        Material material = getMaterial(object.getName(), materialBytes);
+        Material material = getMaterial(name, materialBytes);
         materialRepository.save(material);
     }
     //TODO implement changeable strategy

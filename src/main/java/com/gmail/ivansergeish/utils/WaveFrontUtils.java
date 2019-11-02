@@ -302,23 +302,29 @@ public class WaveFrontUtils {
     	OutputStreamWriter writer = new OutputStreamWriter(stream);  	
     	for (String headStr : object.getHead()) {
     		writer.write(headStr);
+    		writer.append('\n');
     		//writer.newLine();
     	}
     	writer.write("o " + object.getName());
+    	writer.append('\n');
     	for (String vertex : object.getVertexes()) {
     		//writer.newLine();
     		writer.write(vertex);
+    		writer.append('\n');
     	}    	
     	for (FacesUseMaterial faceMaterial : object.getFaces()) {
     		//writer.newLine();
     		writer.write("usemtl " + faceMaterial.getUsemtl());
+    		writer.append('\n');
     		for (String head : faceMaterial.getHead()) {
         		//writer.newLine();
-        		writer.write(head);    			
+        		writer.write(head);
+        		writer.append('\n');
     		}
     		for (String face : faceMaterial.getFaces()) {
         		//writer.newLine();
-        		writer.write(face);    			
+        		writer.write(face); 
+        		writer.append('\n');
     		}
     	}
     	writer.flush();
