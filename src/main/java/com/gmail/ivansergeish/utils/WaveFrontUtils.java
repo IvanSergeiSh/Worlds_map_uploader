@@ -174,29 +174,29 @@ public class WaveFrontUtils {
      * Numbers are in context of all file
      * @throws IOException
      */
-    public List<Integer> getVertexNumsForObject(BufferedReader reader,
-    		String objName) throws IOException {
-    	boolean eof = false;
-    	boolean stop = false;
-    	List<Integer> vertexes = new ArrayList();
-    	List<Integer> vertexesFromStr = new ArrayList();
-    	if (readUntillObjectName(reader, objName)) {
-        	while (!eof && !stop) {
-	    		String str = reader.readLine();
-	    		if (str != null) {
-	    			stop = isObjectDescription(str);
-	    			vertexesFromStr = getVertexIndexesFromString(str);
-	    			for (Integer item: vertexesFromStr) {
-	    				if (!vertexes.contains(item)) {
-	    					vertexes.add(item);
-	    				}
-	    			}
-	    		}
-	    		eof = str == null;
-	    	}
-    	}
-        return vertexes; 	
-    }
+//    public List<Integer> getVertexNumsForObject(BufferedReader reader,
+//    		String objName) throws IOException {
+//    	boolean eof = false;
+//    	boolean stop = false;
+//    	List<Integer> vertexes = new ArrayList();
+//    	List<Integer> vertexesFromStr = new ArrayList();
+//    	if (readUntillObjectName(reader, objName)) {
+//        	while (!eof && !stop) {
+//	    		String str = reader.readLine();
+//	    		if (str != null) {
+//	    			stop = isObjectDescription(str);
+//	    			vertexesFromStr = getVertexIndexesFromString(str);
+//	    			for (Integer item: vertexesFromStr) {
+//	    				if (!vertexes.contains(item)) {
+//	    					vertexes.add(item);
+//	    				}
+//	    			}
+//	    		}
+//	    		eof = str == null;
+//	    	}
+//    	}
+//        return vertexes; 	
+//    }
     //TODO combine two methods in one
     boolean isObjectDescription(String str) {
     	if (str == null || str.isEmpty()) {
@@ -220,20 +220,20 @@ public class WaveFrontUtils {
      *         false if no.
      * @throws IOException
      */
-    boolean readUntillObjectName(BufferedReader reader,
-    		String objName) throws IOException {
-    	boolean eof = false;
-    	while (!eof) {
-    		String str = reader.readLine();
-    		if (str != null) {
-    			if (getObjectName(str) != null && getObjectName(str).equals(objName)) {
-    				return true;
-    			}
-    		}
-    		eof = str == null;
-    	}    	
-    	return false;
-    }
+//    boolean readUntillObjectName(BufferedReader reader,
+//    		String objName) throws IOException {
+//    	boolean eof = false;
+//    	while (!eof) {
+//    		String str = reader.readLine();
+//    		if (str != null) {
+//    			if (getObjectName(str) != null && getObjectName(str).equals(objName)) {
+//    				return true;
+//    			}
+//    		}
+//    		eof = str == null;
+//    	}    	
+//    	return false;
+//    }
     
     public List<Integer> getVertexIndexesFromString(String str) {
     	String[] strs = str.split(" ");

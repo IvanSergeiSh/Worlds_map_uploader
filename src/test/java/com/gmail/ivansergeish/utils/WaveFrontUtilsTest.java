@@ -37,55 +37,20 @@ public class WaveFrontUtilsTest {
     }
     
     @Test
-    public void testReadUntillObjectName() throws IOException {
-    	File file = new File("/home/ivan/projects/projects/ObjFileLoader/src/test/resources/cottage2.obj");    	
-    	BufferedReader reader = Files.newBufferedReader(file.toPath());
-    	Assert.assertTrue(utils.readUntillObjectName(reader, "Cube.002"));
-    	String str = reader.readLine();
-    	Assert.assertEquals("v -11.721604 -3.850292 11.571959", str);
-    	Assert.assertTrue(utils.readUntillObjectName(reader, "Cube"));
-    	Assert.assertEquals("v -11.721604 -1.330806 11.571959", reader.readLine());
-    }
-    
-    @Test
-    public void testReadUntillObjectNameFalse() throws IOException {
-    	File file = new File("/home/ivan/projects/projects/ObjFileLoader/src/test/resources/cottage2.obj");    	
-    	BufferedReader reader = Files.newBufferedReader(file.toPath());
-    	Assert.assertFalse(utils.readUntillObjectName(reader, "Cucamanga"));
-
-    }
-    
-    @Test
     public void testIsObjectDescription() {
     	Assert.assertTrue(utils.isObjectDescription("o name"));
     	Assert.assertFalse(utils.isObjectDescription("name"));
     	Assert.assertFalse(utils.isObjectDescription(""));
     	Assert.assertFalse(utils.isObjectDescription(null));
     }
-
-    @Test
-    public void testGetVertexNumsForObject() throws IOException {
-    	File file = new File("/home/ivan/projects/projects/ObjFileLoader/src/test/resources/cottage2.obj");    	
-    	BufferedReader reader = Files.newBufferedReader(file.toPath());
-    	List<Integer> vertexes = utils.getVertexNumsForObject(reader, "Cube.002"); 
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(1)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(2)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(3)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(4)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(5)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(6)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(7)));
-    	Assert.assertTrue(vertexes.contains(Integer.valueOf(8)));
-    	Assert.assertEquals(8, vertexes.size());
-    }
     
     @Test
     public void testGetVertexesByNumbers() throws IOException {
-    	List<Integer> numbers = Arrays.asList(Integer.valueOf(1),Integer.valueOf(10));
-    	List<String> vertexes = utils.getVertexesByNumbers("/home/ivan/projects/projects/ObjFileLoader/src/test/resources/cottage2.obj", numbers);
+    	List<Integer> numbers = Arrays.asList(Integer.valueOf(1),Integer.valueOf(8));
+    	List<String> vertexes = utils.getVertexesByNumbers(System.getProperty("user.dir") + "/src/test/resources/test.obj", numbers);
     	Assert.assertTrue(vertexes.size() == 2);
-    	Assert.assertTrue(vertexes.get(0).equals("v -11.721604 -3.850292 11.571959"));
-    	Assert.assertTrue(vertexes.get(1).equals("v -11.721604 -2.018250 -7.682706"));
+    	Assert.assertTrue(vertexes.get(0).equals("v 1.000001 0.000001 0.000001"));
+    	Assert.assertTrue(vertexes.get(1).equals("v 0.000001 0.000001 1.000001"));
     }
     
     @Test
