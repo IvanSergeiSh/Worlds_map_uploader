@@ -226,13 +226,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 				}
 				fm.setFaces(faces);
 			});
-			//TODO try to write to *.obj file
-			try {
-				utils.writeToFile(object.getName() + ".obj", object);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 			//TODO calculate center mass of the object with z = 0 and rewrite all the vertexes according to it
 			Point3D center = utils.calcCenterMass(object.getVertexes());
 			object.setPosition(center);
