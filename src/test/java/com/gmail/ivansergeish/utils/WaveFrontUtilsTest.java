@@ -137,4 +137,13 @@ public class WaveFrontUtilsTest {
     	Assert.assertFalse(utils.isRotated(vertexes1, vertexes2, "f 1 2 3 4", "f 3 1 4 2"));
     	
     }
+    
+    @Test
+    public void testCalcVertexAccordingToCenterMass() {
+    	Point3D center = new Point3D(0.500000, 0.500000, 0.500000);
+    	String[] result = utils.calcVertexAccordingToCenterMass("v 1.0000001 0.0000001 0.0000001", center).split(" ");
+    	Assert.assertEquals(0.5, Double.parseDouble(result[1]), 0.01);
+    	Assert.assertEquals(-0.49, Double.parseDouble(result[2]), 0.01);
+    	Assert.assertEquals(-0.49, Double.parseDouble(result[3]), 0.01);
+    }
 }
