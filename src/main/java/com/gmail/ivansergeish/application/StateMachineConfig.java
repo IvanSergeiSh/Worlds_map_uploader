@@ -186,7 +186,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
                    .source(State.NEW_FACE)
                    .target(State.END_OF_FILE)
                    .event(Event.EOF)
-                   .action(eofAction());
+                   .action(newObjectAction());
     }
     
     private Action<State, Event> firstObjectAction() {  
@@ -291,6 +291,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
     }
     private Action<State, Event> eofAction() {  
 		return context -> {
+			//TODO save last object
 			System.out.println("eofAction");
 		};
     }

@@ -34,6 +34,8 @@ public class Reader {
     		str = fReader.readLine();
         	machine.sendEvent(newEventByString(str, machine.getState().getId()));
     	}
+    	// send EOF event
+    	machine.sendEvent(newEventByString(str, machine.getState().getId()));
     	return objects;
     }
     
@@ -81,6 +83,8 @@ public class Reader {
     			event = Event.UNKNOWN_STR;
     			event.setValue(str);
     		}
+    	} else if (str == null) {
+    		event = Event.EOF;
     	}
 		return event;
     }

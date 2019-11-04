@@ -64,11 +64,8 @@ public class WaveFrontUtils {
     			}
     		}
     		if (str != null && !str.isEmpty() && str.charAt(0) == 'f') {
-    			//TODO read all vertexes of object and add to object
-    			//maybe error!!!
     			object.getVertexes().addAll(getVertexesByNumbers(fName, getVertexesNumbersFromFace(str)));
     			
-    			//TODO convert face to new format
     		}
     	}
     	return null;
@@ -164,39 +161,7 @@ public class WaveFrontUtils {
     		return str1 + " " + str2;
     	});
     }
-    
-    /**
-     * The method is intended to read a file from the very beginning till the next object description
-     * and looking through all the vertexes taking part in current object
-     * @param reader should be installed on initial position of the beginning of file
-     * @param objName
-     * @return list of distinct vertexes numbers of the object
-     * Numbers are in context of all file
-     * @throws IOException
-     */
-//    public List<Integer> getVertexNumsForObject(BufferedReader reader,
-//    		String objName) throws IOException {
-//    	boolean eof = false;
-//    	boolean stop = false;
-//    	List<Integer> vertexes = new ArrayList();
-//    	List<Integer> vertexesFromStr = new ArrayList();
-//    	if (readUntillObjectName(reader, objName)) {
-//        	while (!eof && !stop) {
-//	    		String str = reader.readLine();
-//	    		if (str != null) {
-//	    			stop = isObjectDescription(str);
-//	    			vertexesFromStr = getVertexIndexesFromString(str);
-//	    			for (Integer item: vertexesFromStr) {
-//	    				if (!vertexes.contains(item)) {
-//	    					vertexes.add(item);
-//	    				}
-//	    			}
-//	    		}
-//	    		eof = str == null;
-//	    	}
-//    	}
-//        return vertexes; 	
-//    }
+
     //TODO combine two methods in one
     boolean isObjectDescription(String str) {
     	if (str == null || str.isEmpty()) {
@@ -220,20 +185,6 @@ public class WaveFrontUtils {
      *         false if no.
      * @throws IOException
      */
-//    boolean readUntillObjectName(BufferedReader reader,
-//    		String objName) throws IOException {
-//    	boolean eof = false;
-//    	while (!eof) {
-//    		String str = reader.readLine();
-//    		if (str != null) {
-//    			if (getObjectName(str) != null && getObjectName(str).equals(objName)) {
-//    				return true;
-//    			}
-//    		}
-//    		eof = str == null;
-//    	}    	
-//    	return false;
-//    }
     
     public List<Integer> getVertexIndexesFromString(String str) {
     	String[] strs = str.split(" ");
@@ -303,26 +254,21 @@ public class WaveFrontUtils {
     	for (String headStr : object.getHead()) {
     		writer.write(headStr);
     		writer.append('\n');
-    		//writer.newLine();
     	}
     	writer.write("o " + object.getName());
     	writer.append('\n');
     	for (String vertex : object.getVertexes()) {
-    		//writer.newLine();
     		writer.write(vertex);
     		writer.append('\n');
     	}    	
     	for (FacesUseMaterial faceMaterial : object.getFaces()) {
-    		//writer.newLine();
     		writer.write("usemtl " + faceMaterial.getUsemtl());
     		writer.append('\n');
     		for (String head : faceMaterial.getHead()) {
-        		//writer.newLine();
         		writer.write(head);
         		writer.append('\n');
     		}
     		for (String face : faceMaterial.getFaces()) {
-        		//writer.newLine();
         		writer.write(face); 
         		writer.append('\n');
     		}
