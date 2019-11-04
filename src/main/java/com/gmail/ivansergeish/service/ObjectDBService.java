@@ -60,9 +60,9 @@ public class ObjectDBService {
     	
     	long id = locationRepository.getNextLocationId();
     	long objectId = locationRepository.getNextObjectId();
-    	return new Location(id, objectId, object.getPosition().getX(),
+    	return new Location(id, objectId, object.getPosition().getZ(),
+    			object.getPosition().getX(),
     			object.getPosition().getY(),
-    			object.getPosition().getZ(),
     			0,
     			object.getBettaOY(),
     			object.getAlphaOZ());
