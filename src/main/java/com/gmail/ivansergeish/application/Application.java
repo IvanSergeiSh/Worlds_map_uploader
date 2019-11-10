@@ -15,10 +15,12 @@ public class Application {
 		if (args.length < 1) {
 			throw new IllegalArgumentException("No filename in commandline");
 		}
-		String fName = args[0];
+		String fName = args[0];		
+		String mtlFileName = args[1];
 		Reader reader = context.getBean(Reader.class);
 		StateMachineConfig stateMachine = context.getBean(StateMachineConfig.class);
 		stateMachine.setfName(fName);
+		stateMachine.setMtlFileName(mtlFileName);
 		try {
 			reader.readFile(fName);
 		} catch (IOException e) {

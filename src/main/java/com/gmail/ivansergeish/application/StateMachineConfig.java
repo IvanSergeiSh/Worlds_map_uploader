@@ -54,10 +54,20 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 	private ObjectDBService service;;
 	
 	private String fName;
+	
+	private String mtlFileName;
     //@Override
 
 	public String getfName() {
 		return fName;
+	}
+
+	public String getMtlFileName() {
+		return mtlFileName;
+	}
+
+	public void setMtlFileName(String mtlFileName) {
+		this.mtlFileName = mtlFileName;
 	}
 
 	public StateMachineConfig() {}
@@ -302,7 +312,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			if (context.getEvent().getValue().contains("mtllib")) {
 				object.setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
 			    try {
-					mtlFileBytes = utils.readMaterialsFile(object.getMaterialsFileName());
+					mtlFileBytes = utils.readMaterialsFile(mtlFileName);//(object.getMaterialsFileName());
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
