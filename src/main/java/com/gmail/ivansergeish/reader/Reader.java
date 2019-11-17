@@ -71,7 +71,7 @@ public class Reader {
     			event = Event.NEW_FACE;
     			event.setValue(str);     			
     		}
-    		if (str.split(" ")[0].equals("usemtl")) {
+    		if (str.contains("usemtl")) {
        			event = Event.USE_MTL;
        			event.setValue(str);    			
     		}

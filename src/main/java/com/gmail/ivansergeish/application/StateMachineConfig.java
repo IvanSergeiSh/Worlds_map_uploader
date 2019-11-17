@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +21,11 @@ import org.springframework.statemachine.config.builders.StateMachineStateConfigu
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 import com.gmail.ivansergeish.dto.FacesUseMaterial;
-import com.gmail.ivansergeish.dto.Point3D;
 import com.gmail.ivansergeish.dto.WaveFrontObject;
+import com.gmail.ivansergeish.dto.WaveTexturedObject;
+import com.gmail.ivansergeish.dto.point.Point3D;
 import com.gmail.ivansergeish.service.ObjectDBService;
+import com.gmail.ivansergeish.statemachine.action.NewObjectAction;
 import com.gmail.ivansergeish.statemachine.event.Event;
 import com.gmail.ivansergeish.statemachine.state.State;
 import com.gmail.ivansergeish.utils.WaveFrontUtils;
@@ -51,13 +55,15 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
     private byte[] mtlFileBytes;
 	
 	@Autowired
-	private ObjectDBService service;;
+	private ObjectDBService service;
+	
+	@Autowired
+	private NewObjectAction newObjectAction;
 	
 	private String fName;
 	
 	private String mtlFileName;
-    //@Override
-
+	
 	public String getfName() {
 		return fName;
 	}
@@ -97,7 +103,9 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 	}
 	public void setfName(String fName) {
 		this.fName = fName;
+		newObjectAction.setfName(fName);
 	}
+
 	@Override
     public void configure(final StateMachineStateConfigurer<State, Event> states) throws Exception {
         states
@@ -183,8 +191,14 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
                    .withExternal()
                    .source(State.NEW_FACES_GROUP)
                    .target(State.NEW_FACE)
-                   .event(Event.NEW_FACE)
+                   .event(Event.FIRST_FACE)
                    .action(newFaceAction())
+                   .and()
+                   .withExternal()
+                   .source(State.NEW_FACE)
+                   .target(State.NEW_FACES_GROUP)
+                   .event(Event.USE_MTL)
+                   .action(facesGroupAction())
                    .and()
                    .withExternal()
                    .source(State.NEW_FACE)
@@ -203,71 +217,16 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 		return context -> {
 			System.out.println("first object");
 			List<String> head = object.getHead();
-			object = new WaveFrontObject();
+			object = new WaveTexturedObject();
 			object.setHead(head);
 			String name = utils.getObjectName(context.getEvent().getValue());
 			object.setName(name.replace('.', '_'));
+			newObjectAction.setObject(object);
 		};
     }
 
     private Action<State, Event> newObjectAction() {
-    	//TODO process old object, save it and create a new one
-		return context -> {
-			//TODO first of all we should collect all the vertexes numbers from objects faces
-			List<Integer> vertexesNums = object.getFaces().stream().flatMap((FacesUseMaterial fm) -> {
-				List<Integer> vertexesIndexes = new ArrayList();
-				for (String face : fm.getFaces()) {
-					vertexesIndexes.addAll(utils.getVertexIndexesFromString(face));
-				}
-				return vertexesIndexes.stream();
-			}).distinct().sorted().collect(Collectors.toList());
-			try {
-				List<String> vertexes = utils.getVertexesByNumbers(fName, vertexesNums);
-				object.setVertexes(vertexes);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//TODO now we should process faces
-			object.getFaces().stream().forEach((FacesUseMaterial fm) -> {
-				List<String> faces = new ArrayList();
-				for (String face : fm.getFaces()) {
-					faces.add(utils.processFaceToNewForm(vertexesNums, face));					
-				}
-				fm.setFaces(faces);
-			});
-
-			//TODO calculate center mass of the object with z = 0 and rewrite all the vertexes according to it
-			Point3D center = utils.calcCenterMass(object.getVertexes());
-			object.setPosition(center);
-			
-			//TODO calculate shift according to center of mass
-			List<String> vertexes = new ArrayList();
-			for (String vertex : object.getVertexes()) {
-				vertexes.add(utils.calcVertexAccordingToCenterMass(vertex, center));
-			}
-			object.setVertexes(vertexes);
-			//TODO save object to database !!!!!!!!!!
-			//geometryRepository.save(entities)
-			try {
-				service.save(object, fName, mtlFileBytes);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-				//TODO save object name to object names list
-			//TODO check all the uploaded objects for equility
-			//utils.getNewFaceRepresentation(vertexesNums, faceVertexes)
-			//utils.getVertexIndexesFromString(str)
-			List<String> head = object.getHead();
-			String mtlFileName = object.getMaterialsFileName();
-			object = new WaveFrontObject();
-			object.setHead(head);
-			//object.setName(utils.getObjectName(context.getEvent().getValue()));
-			object.setMaterialsFileName(mtlFileName);
-			String name = utils.getObjectName(context.getEvent().getValue());
-			object.setName(name.replace('.', '_'));			
-		};
+    	return newObjectAction;
     }
     
     private Action<State, Event> firstVertexAction() {  
@@ -284,7 +243,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 		return context -> {
 			facesGroup = new FacesUseMaterial();
 			facesGroup.setUsemtl(utils.getUseMtlName(context.getEvent().getValue()));
-			object.getFaces().add(facesGroup);
+			newObjectAction.getObject().getFaces().add(facesGroup);
 		};
     }
     private Action<State, Event> unknownStrAction() {  
@@ -308,12 +267,16 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
     
     private Action<State, Event> addObjectHead() {
 		return context -> {
-			object.getHead().add(context.getEvent().getValue());
+			List<String> head =new ArrayList();
+			object = new WaveTexturedObject();
+			object.setHead(head);
+			newObjectAction.setObject(object);
+			newObjectAction.getObject().getHead().add(context.getEvent().getValue());
 			if (context.getEvent().getValue().contains("mtllib")) {
-				object.setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
+				newObjectAction.getObject().setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
 			    try {
 					mtlFileBytes = utils.readMaterialsFile(mtlFileName);//(object.getMaterialsFileName());
-					
+					newObjectAction.setMtlFileBytes(mtlFileBytes);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
