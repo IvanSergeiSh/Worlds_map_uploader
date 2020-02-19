@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.gmail.ivansergeish.dto.Point3D;
+import com.gmail.ivansergeish.dto.point.Point3D;
 
 public class WaveFrontUtilsTest {
 	private WaveFrontUtils utils = new WaveFrontUtils();
@@ -26,15 +26,31 @@ public class WaveFrontUtilsTest {
     @Test
     public void testGetVertexIndexesFromString() {
     	
-    	Assert.assertEquals(4, utils.getVertexIndexesFromString("f 1 2 3 4").size());
-    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4").contains(Integer.valueOf(1)));
-    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4").contains(Integer.valueOf(2)));
-    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4").contains(Integer.valueOf(3)));
-    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4").contains(Integer.valueOf(4)));
-    	Assert.assertFalse(utils.getVertexIndexesFromString("f 1 2 3 4").contains(Integer.valueOf(0)));
-    	Assert.assertEquals(0, utils.getVertexIndexesFromString("o 1 2 3 4").size());
-    	Assert.assertEquals(0, utils.getVertexIndexesFromString("").size());
+    	Assert.assertEquals(4, utils.getVertexIndexesFromString("f 1 2 3 4", 0).size());
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4", 0).contains(Integer.valueOf(1)));
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4", 0).contains(Integer.valueOf(2)));
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4", 0).contains(Integer.valueOf(3)));
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 1 2 3 4", 0).contains(Integer.valueOf(4)));
+    	Assert.assertFalse(utils.getVertexIndexesFromString("f 1 2 3 4", 0).contains(Integer.valueOf(0)));
+    	Assert.assertEquals(0, utils.getVertexIndexesFromString("o 1 2 3 4", 0).size());
+    	Assert.assertEquals(0, utils.getVertexIndexesFromString("", 0).size());
     }
+
+    @Test
+    public void testGetVertexIndexesFromStringCaseOfTwoData() {    	
+    	Assert.assertEquals(4, utils.getVertexIndexesFromString("f 1/1 2/1 3/1 4/1", 1).size());
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(1)));
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(2)));
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(3)));
+    	Assert.assertTrue(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(4)));
+    	Assert.assertFalse(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(0)));
+    	Assert.assertEquals(0, utils.getVertexIndexesFromString("o 1 2 3 4", 1).size());
+    	Assert.assertEquals(0, utils.getVertexIndexesFromString("", 1).size());
+    }
+//    @Test(expected=IndexOutOfBoundsException.class)
+//    public void testGetVertexIndexesFromStringIndexOutOfBound() {
+//    	utils.getVertexIndexesFromString("", 1).size();
+//    }
     
     @Test
     public void testIsObjectDescription() {
@@ -47,7 +63,7 @@ public class WaveFrontUtilsTest {
     @Test
     public void testGetVertexesByNumbers() throws IOException {
     	List<Integer> numbers = Arrays.asList(Integer.valueOf(1),Integer.valueOf(8));
-    	List<String> vertexes = utils.getVertexesByNumbers(System.getProperty("user.dir") + "/src/test/resources/test.obj", numbers);
+    	List<String> vertexes = utils.getVertexesByNumbers(System.getProperty("user.dir") + "/src/test/resources/test.obj", numbers, "v");
     	Assert.assertTrue(vertexes.size() == 2);
     	Assert.assertTrue(vertexes.get(0).equals("v 1.000001 0.000001 0.000001"));
     	Assert.assertTrue(vertexes.get(1).equals("v 0.000001 0.000001 1.000001"));
@@ -63,7 +79,7 @@ public class WaveFrontUtilsTest {
     			Integer.valueOf(13),
     			Integer.valueOf(14),
     			Integer.valueOf(15),
-    			Integer.valueOf(16))), "f 14 15 11 10");
+    			Integer.valueOf(16))), "f 14 15 11 10", 0);
     	Assert.assertTrue(result.equals("f 6 7 3 2"));
 
     	result = utils.processFaceToNewForm(new ArrayList(Arrays.asList(
@@ -71,8 +87,16 @@ public class WaveFrontUtilsTest {
     			Integer.valueOf(3),
     			Integer.valueOf(6),
     			Integer.valueOf(8),
-    			Integer.valueOf(9))), "f 6 8 9");
+    			Integer.valueOf(9))), "f 6 8 9", 0);
     	Assert.assertTrue(result.equals("f 3 4 5"));
+    	
+    	result = utils.processFaceToNewForm(new ArrayList(Arrays.asList(
+    			Integer.valueOf(2),
+    			Integer.valueOf(3),
+    			Integer.valueOf(6),
+    			Integer.valueOf(8),
+    			Integer.valueOf(9))), "f 1/6 1/8 1/9", 1);
+    	Assert.assertTrue(result.equals("f 1/3 1/4 1/5"));    	
     }
     
     @Test
@@ -104,6 +128,11 @@ public class WaveFrontUtilsTest {
     	Assert.assertTrue(points.size() == 2);
     	Assert.assertTrue(points.get(0).equals(new Point3D(1, 0, 0)));
     	Assert.assertTrue(points.get(1).equals(new Point3D(-1, 0, 0)));
+    	
+    	points = utils.vertexesFromFace(vertexes, "f 3/1 4/1");
+    	Assert.assertTrue(points.size() == 2);
+    	Assert.assertTrue(points.get(0).equals(new Point3D(1, 0, 0)));
+    	Assert.assertTrue(points.get(1).equals(new Point3D(-1, 0, 0)));    	
     }
     
     @Test
@@ -145,5 +174,20 @@ public class WaveFrontUtilsTest {
     	Assert.assertEquals(0.5, Double.parseDouble(result[1]), 0.01);
     	Assert.assertEquals(-0.49, Double.parseDouble(result[2]), 0.01);
     	Assert.assertEquals(-0.49, Double.parseDouble(result[3]), 0.01);
+    }
+    
+    @Test
+    public void testGetIndexFromFaceSubString() {
+    	String face = "f 6177/6 6178/6 6179/6 6180/6";
+    	Assert.assertEquals("6",utils.getIndexFromFaceSubString("6177/6", 1));
+    	Assert.assertEquals("6177",utils.getIndexFromFaceSubString("6177/6", 0));
+    	
+    }
+    
+    @Test
+    public void testSubstitute() {
+    	Assert.assertEquals("1/3", utils.substitute("1/2", 3, 1));
+    	Assert.assertEquals("1/3/3", utils.substitute("1/2/3", 3, 1));
+    	Assert.assertEquals("3/2/3", utils.substitute("1/2/3", 3, 0));
     }
 }

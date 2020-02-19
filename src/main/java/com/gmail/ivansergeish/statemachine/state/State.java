@@ -7,6 +7,7 @@ public enum State {
 	FINISH,
     OBJECT,
     VERTEX,
+    TEXTURE_VERTEX,
     NEW_FACES_GROUP,
     NEW_FACE,
     UNKNOWN_STR,

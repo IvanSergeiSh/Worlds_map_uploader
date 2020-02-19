@@ -3,6 +3,8 @@ package com.gmail.ivansergeish.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gmail.ivansergeish.dto.point.Point3D;
+
 public class WaveFrontObject {
 	private Point3D position;
     private double alphaOZ;
