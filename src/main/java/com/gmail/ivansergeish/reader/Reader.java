@@ -38,7 +38,7 @@ public class Reader {
     	machine.sendEvent(newEventByString(str, machine.getState().getId()));
     	return objects;
     }
-    
+    //TODO ensure vt also works fine
     private Event newEventByString(String str, State state) {
     	Event event = Event.SKIP;
     	event.setValue("skip");
@@ -52,11 +52,20 @@ public class Reader {
     			event.setValue(str);
     		}    		
     		if (str.charAt(0) == 'v' && state == State.OBJECT) {
-    			event = Event.FIRST_VERTEX;
+    			if(str.length() > 1 && str.charAt(1) == 't') {
+    				event = Event.FIRST_TEXTURE_VERTEX;
+    			} else {
+    				event = Event.FIRST_VERTEX;
+    			}
     			event.setValue(str);    			
     		}
+    		
     		if (str.charAt(0) == 'v' && state == State.VERTEX) {
-    			event = Event.NEW_VERTEX;
+    			if(str.length() > 1 && str.charAt(1) == 't') {
+    				event = Event.NEW_TEXTURE_VERTEX;
+    			} else {
+    				event = Event.NEW_VERTEX;
+    			}    			
     			event.setValue(str);    			
     		}    		
     		if (str.charAt(0) == 'f' && state == State.NEW_FACES_GROUP) {

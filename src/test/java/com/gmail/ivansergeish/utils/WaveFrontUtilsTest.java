@@ -37,7 +37,7 @@ public class WaveFrontUtilsTest {
     }
 
     @Test
-    public void testGetVertexIndexesFromStringCase2() {    	
+    public void testGetVertexIndexesFromStringCaseOfTwoData() {    	
     	Assert.assertEquals(4, utils.getVertexIndexesFromString("f 1/1 2/1 3/1 4/1", 1).size());
     	Assert.assertTrue(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(1)));
     	Assert.assertTrue(utils.getVertexIndexesFromString("f 0/1 0/2 0/3 0/4", 1).contains(Integer.valueOf(2)));
@@ -128,6 +128,11 @@ public class WaveFrontUtilsTest {
     	Assert.assertTrue(points.size() == 2);
     	Assert.assertTrue(points.get(0).equals(new Point3D(1, 0, 0)));
     	Assert.assertTrue(points.get(1).equals(new Point3D(-1, 0, 0)));
+    	
+    	points = utils.vertexesFromFace(vertexes, "f 3/1 4/1");
+    	Assert.assertTrue(points.size() == 2);
+    	Assert.assertTrue(points.get(0).equals(new Point3D(1, 0, 0)));
+    	Assert.assertTrue(points.get(1).equals(new Point3D(-1, 0, 0)));    	
     }
     
     @Test
@@ -177,5 +182,12 @@ public class WaveFrontUtilsTest {
     	Assert.assertEquals("6",utils.getIndexFromFaceSubString("6177/6", 1));
     	Assert.assertEquals("6177",utils.getIndexFromFaceSubString("6177/6", 0));
     	
+    }
+    
+    @Test
+    public void testSubstitute() {
+    	Assert.assertEquals("1/3", utils.substitute("1/2", 3, 1));
+    	Assert.assertEquals("1/3/3", utils.substitute("1/2/3", 3, 1));
+    	Assert.assertEquals("3/2/3", utils.substitute("1/2/3", 3, 0));
     }
 }

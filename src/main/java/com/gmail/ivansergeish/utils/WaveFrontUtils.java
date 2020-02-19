@@ -21,76 +21,39 @@ import com.gmail.ivansergeish.dto.WaveTexturedObject;
 import com.gmail.ivansergeish.dto.point.Point3D;
 import com.gmail.ivansergeish.dto.point.PointScalarMultiplicationVisitor;
 import com.gmail.ivansergeish.dto.point.PointSubtractionVisitor;
+/**
+ * The class has a number of utill-methods to separate sub-objects 
+ * @author ivan
+ *
+ */
 @Service
 public class WaveFrontUtils {
+	
+	private static final int VERTEX_INDEX_IN_FACE = 0;
+	
 	private PointScalarMultiplicationVisitor multVisitor 
 	= new PointScalarMultiplicationVisitor();
 	private PointSubtractionVisitor subtractionVisitor 
 	= new PointSubtractionVisitor();
 
-	/**
-	 * This method is intended to creation new WvFObject of file.
-	 * reader should start from the next string to object name.
-	 * All the vertexes should be read from file fName. 
-	 * @param fName 
-	 * @param reader
-	 * @param objName 
-	 * @return
-	 * @throws IOException
-	 */
-//    public WaveFrontObject readNextObject(String fName, 
-//    		BufferedReader reader,
-//    		String objName) throws IOException {
-//    	List<WaveFrontObject> results = new ArrayList();
-//        WaveFrontObject object = new WaveFrontObject(); 
-//        
-//    	File file = new File(fName);    	
-//    	BufferedReader fReader = Files.newBufferedReader(file.toPath());
-//    	boolean stop = false;
-//    	String currentObjectName = null;
-//    	String currentUseMtl = null;
-//    	while (!stop) {
-//    		FacesUseMaterial facesUseMtl = null;
-//    		List<FacesUseMaterial> facesUseMtls = new ArrayList();
-//    		String str = reader.readLine();
-//    		stop = str == null;
-//    		String objectName = getObjectName(str);
-//    		if (objectName != null && !objectName.isEmpty()) {
-//    			if (!objectName.equals(currentObjectName)) {
-//    				object = new WaveFrontObject();
-//    				results.add(object);
-//    				currentObjectName = objectName;
-//    			}
-//    			object.setName(objectName);
-//    		}
-//    		if (isUseMtl(str)) {
-//    			String useMtlName = getUseMtlName(str);
-//    			if (!useMtlName.equals(currentUseMtl)) {
-//    				facesUseMtl = new FacesUseMaterial();
-//    				currentUseMtl = useMtlName;
-//    				facesUseMtls.add(facesUseMtl);
-//    			}
-//    		}
-//    		if (str != null && !str.isEmpty() && str.charAt(0) == 'f') {
-//    			object.getVertexes().addAll(getVertexesByNumbers(fName, getVertexesNumbersFromFace(str)));
-//    			
-//    		}
-//    	}
-//    	return null;
-//    }
-//    
-	//TODO add appropriate vertex index getter via getIndexFromFaceSubString
-    List<Integer> getVertexesNumbersFromFace(String face) {
+    List<Integer> getVertexesNumbersFromFacse(String face) {
     	ArrayList<Integer> result = new ArrayList();
     	if (face != null && !face.isEmpty() && face.charAt(0) == 'f') {
     		String[] strs = face.split(" ");
     		for (int i = 1; i < strs.length; i++) {
-    			result.add(Integer.valueOf(strs[i]));
+    			result.add(Integer.valueOf(getIndexFromFaceSubString(strs[i], VERTEX_INDEX_IN_FACE)));
     		}
     	}
     	return result;
     } 
-    
+    /**
+     * face usualy is written in a format like:
+     *  f vertexIndex/faceIndex/normalIndex
+     * The method returns appropriate substring of the described above
+     * @param subStr
+     * @param i
+     * @return
+     */
     String getIndexFromFaceSubString(String subStr, int i) {
     	String[] strs = subStr.split("/");
     	if (strs.length >= i) {
@@ -101,7 +64,8 @@ public class WaveFrontUtils {
     }
     
     /**
-     * The method is intended to find all the vertexes in file by their numbers
+     * The method is intended to find all the vertexes and textureVertexes
+     *  in the file by their current numbers
      * @param fName
      * @param numbers
      * @return
@@ -154,9 +118,10 @@ public class WaveFrontUtils {
 
     }
     /**
-     * As new object to be extracted from the whole file should has all it's vertexes in it,
+     * As new object to be extracted from the whole file
+     *  should has all it's vertexes in it,
      * 
-     * @param objVertexes
+     * @param objVertexes - indexes of vertexes in 
      * @param face
      * @return
      */
@@ -185,12 +150,6 @@ public class WaveFrontUtils {
     		result = result + " " + substitute(strs[i], newFaceVertexes.get(i - 1), itemNumber);
     	}
     	return result;
-    	//return substitute(faceSubString, valToBeSubstituted, itemNumber)
-//    	return getNewFaceRepresentation(objVertexes, items).stream().map((Integer i)-> {
-//    		return i.toString();
-//    	}).reduce("f", (String str1, String str2)-> {
-//    		return str1 + " " + str2;
-//    	});
     }
     
     String substitute(String faceSubString, int valToBeSubstituted, int itemNumber) {
@@ -210,19 +169,19 @@ public class WaveFrontUtils {
     }
     
 
-    //TODO combine two methods in one
     boolean isObjectDescription(String str) {
-    	if (str == null || str.isEmpty()) {
-    		return false;
-    	}
-    	return str.split(" ")[0].equals("o");
+    	return isSpecificString(str, "o");
     }
     
     boolean isUseMtl(String str) {
+    	return isSpecificString(str, "usemtl");
+    }
+    
+    boolean isSpecificString(String str, String specific) {
     	if (str == null || str.isEmpty()) {
     		return false;
     	}
-    	return str.split(" ")[0].equals("usemtl");
+    	return str.split(" ")[0].equals(specific);    	
     }
     
     /**
@@ -264,10 +223,10 @@ public class WaveFrontUtils {
     public String getUseMtlName(String str) {
     	String[] strs = str.split(" ");
     	if (strs.length > 1 && strs[0].equals("usemtl")) {
-    		return strs[1];
+    		return strs[1].replaceAll(".jpg", "");
     	}
     	return null;    	
-    }    
+    }
     
     public void writeToFile(String fName, WaveFrontObject object) throws IOException {
     	File file = new File(fName);    	
@@ -376,17 +335,18 @@ public class WaveFrontUtils {
      * This method is intended to get appropriate vertex from vertexes 
      * list and face string representation
      * @param vertexes list of vertexes string representation: v 1.00 0.00 0.00
-     * @param face - string representation of face: f 1 2 3 4 - 
+     * @param face - string representation of face: f 1/11 2/12 3/13 4/14 - 
      *               means that current face consists of vertexes
      *               number 0, 1, 2 ,3
+     *               
      * @return
      */
-    //TODO implement case: f 1/1 2/2 3/3 4/4
     public List<Point3D> vertexesFromFace(List<String> vertexes, String face) {
     	return Arrays.stream(face.split(" ")).filter((String id) -> {
     		return !id.equals("f");
-    	}).map((String id) -> {
-    		return Integer.valueOf(id);
+    	}).map((String faceString) -> {
+    		return Integer.valueOf(getIndexFromFaceSubString(faceString, VERTEX_INDEX_IN_FACE));
+    		//return Integer.valueOf(id);
     	}).map((Integer id) -> {
     		return getPointFromStr(vertexes.get(id - 1));
     	}).collect(Collectors.toList());

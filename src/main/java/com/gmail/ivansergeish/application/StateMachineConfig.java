@@ -275,10 +275,11 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			if (context.getEvent().getValue().contains("mtllib")) {
 				newObjectAction.getObject().setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
 			    try {
+			    	//TODO remove .jpg suffix from newmtl in mtl file
+			    	//TODO replace path on disk to appropriate url on server in mtl file
 					mtlFileBytes = utils.readMaterialsFile(mtlFileName);//(object.getMaterialsFileName());
 					newObjectAction.setMtlFileBytes(mtlFileBytes);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

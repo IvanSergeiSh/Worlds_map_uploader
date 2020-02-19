@@ -17,6 +17,7 @@ public class Application {
 		}
 		String fName = args[0];		
 		String mtlFileName = args[1];
+		//TODO read textures 
 		Reader reader = context.getBean(Reader.class);
 		StateMachineConfig stateMachine = context.getBean(StateMachineConfig.class);
 		stateMachine.setfName(fName);
