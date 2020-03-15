@@ -100,7 +100,7 @@ public class NewObjectAction implements Action<State, Event> {
 		    List<Integer> vTextureNums = getAllObjectVertexesNumbers(object, VType.V_TEXTURE);
 			try {
 				List<String> vertexes = utils.getVertexesByNumbers(fName, vertexesNums, "v");
-				List<String> vTextures = utils.getVertexesByNumbers(fName, vertexesNums, "vt");
+				List<String> vTextures = utils.getVertexesByNumbers(fName, vTextureNums, "vt");
 				object.setVertexes(vertexes);
 				((WaveTexturedObject)object).setVTextures(vTextures);
 			} catch (IOException e) {

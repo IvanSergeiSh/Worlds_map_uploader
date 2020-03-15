@@ -15,10 +15,12 @@ import data.Geometry;
 import data.Location;
 import data.Material;
 import data.ObjectType;
+import data.Sprite;
 import repository.DescriptionRepository;
 import repository.GeometryRepository;
 import repository.LocationRepository;
 import repository.MaterialRepository;
+import repository.SpriteRepository;
 /**
  * 
  * @author Ivan Shishkin
@@ -27,17 +29,26 @@ import repository.MaterialRepository;
 @Service
 @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
 public class ObjectDBService {
+	
 	private WaveFrontUtils utils = new WaveFrontUtils();
+	
 	@Autowired
 	private DescriptionRepository descriptionRepository;
+	
 	@Autowired
 	private LocationRepository locationRepository;
+	
 	@Autowired
 	private GeometryRepository geometryRepository;
+	
 	@Autowired
 	private MaterialRepository materialRepository;
+	
 	@Autowired
 	private NamingStrategy namingService;
+	
+	@Autowired
+	private SpriteRepository spriteRepository;
 
 	
     public void save(WaveFrontObject object, String fName, byte[] materialBytes) throws IOException {
@@ -51,6 +62,16 @@ public class ObjectDBService {
         Material material = getMaterial(name, materialBytes);
         materialRepository.save(material);
     }
+    
+    public void saveSprite(byte[] bytes, String spriteame) {
+    	spriteRepository.save(new Sprite(spriteame, bytes));
+    }
+    
+    public void deleteSprite(String name) {
+    	spriteRepository.delete(name);
+    }
+    
+    
     //TODO implement changeable strategy
     Geometry getGeometry(String name, WaveFrontObject object) throws IOException {
     	return new Geometry(name, utils.writeToByteArray(object));

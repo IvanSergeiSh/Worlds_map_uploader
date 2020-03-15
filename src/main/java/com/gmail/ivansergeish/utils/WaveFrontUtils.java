@@ -13,6 +13,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.gmail.ivansergeish.dto.FacesUseMaterial;
@@ -30,6 +33,9 @@ import com.gmail.ivansergeish.dto.point.PointSubtractionVisitor;
 public class WaveFrontUtils {
 	
 	private static final int VERTEX_INDEX_IN_FACE = 0;
+	
+	@Autowired
+	private Environment env;
 	
 	private PointScalarMultiplicationVisitor multVisitor 
 	= new PointScalarMultiplicationVisitor();
@@ -374,10 +380,29 @@ public class WaveFrontUtils {
     	}
     	return true;
     }
+    //TODO improve the method including erasing ".jpg" suffix from newmtl 
+    // and improve map_Kd path from c:\...\currentimg.jpg to 
+    // https://...//map/sprite/currentimg
     
-	public byte[] readMaterialsFile(String fName) throws IOException {
+	public byte[] readFileToByteArray(String fName) throws IOException {
+		
     	File file = new File(fName);
     	return Files.readAllBytes(file.toPath());
 		
 	}
+//	//TODO implement reading bytes from file and improving lines inside
+//	
+//	public byte[] readMaterials(String fName) throws IOException{
+//		File file = new File(fName);
+//		List<String> list = Files.readAllLines(file.toPath());
+//		for(int i = 0; i < list.size(); i++) {
+//			String[] strs = list.get(i).split(" ");
+//			if (strs.length > 0 && strs[0].equals("newmtl")) {
+//				String newMtl = "newmtl " + strs[1].replaceAll(".jpg", "");
+//			}
+//			if (strs.length > 0 && strs[0].equals("map_Kd")) {
+//				String newMapKd = "map_Kd " + strs[1].replaceAll(".jpg", "");
+//			}
+//		}
+//	}
 }
