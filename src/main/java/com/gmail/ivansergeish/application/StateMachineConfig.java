@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachine;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
@@ -24,6 +25,7 @@ import com.gmail.ivansergeish.dto.FacesUseMaterial;
 import com.gmail.ivansergeish.dto.WaveFrontObject;
 import com.gmail.ivansergeish.dto.WaveTexturedObject;
 import com.gmail.ivansergeish.dto.point.Point3D;
+import com.gmail.ivansergeish.materials.reader.MaterialsReader;
 import com.gmail.ivansergeish.service.ObjectDBService;
 import com.gmail.ivansergeish.statemachine.action.NewObjectAction;
 import com.gmail.ivansergeish.statemachine.event.Event;
@@ -38,13 +40,18 @@ import repository.MaterialRepository;
 @Configuration
 @ComponentScan({"com.gmail.ivansergeish.reader", "com.gmail.ivansergeish.utils"})
 @EnableStateMachine
+@PropertySource("classpath:application.properties")
 public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State, Event> {
 	
 	private Map<String, WaveFrontObject> objects = new HashMap();
 	
 	private WaveFrontObject object = new WaveFrontObject();
 	
-	private WaveFrontUtils utils = new WaveFrontUtils();
+	@Autowired
+	private WaveFrontUtils utils;// = new WaveFrontUtils();
+	
+	@Autowired
+	private MaterialsReader materialsReader;
 	
 	private FacesUseMaterial facesGroup = new FacesUseMaterial();
 	
@@ -274,14 +281,14 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<State,
 			newObjectAction.getObject().getHead().add(context.getEvent().getValue());
 			if (context.getEvent().getValue().contains("mtllib")) {
 				newObjectAction.getObject().setMaterialsFileName(context.getEvent().getValue().split(" ")[1]);
-			    try {
+			    //try {
 			    	//TODO remove .jpg suffix from newmtl in mtl file
 			    	//TODO replace path on disk to appropriate url on server in mtl file
-					mtlFileBytes = utils.readMaterialsFile(mtlFileName);//(object.getMaterialsFileName());
+					mtlFileBytes = materialsReader.read(mtlFileName);//utils.readMaterialsFile(mtlFileName);//(object.getMaterialsFileName());
 					newObjectAction.setMtlFileBytes(mtlFileBytes);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				//} catch (IOException e) {
+				//	e.printStackTrace();
+				//}
 			}
 			
 			System.out.println("object head");

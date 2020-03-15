@@ -68,6 +68,35 @@ public class WaveFrontUtilsTest {
     	Assert.assertTrue(vertexes.get(0).equals("v 1.000001 0.000001 0.000001"));
     	Assert.assertTrue(vertexes.get(1).equals("v 0.000001 0.000001 1.000001"));
     }
+
+    /**
+     * The test was developed to test functionality of reading of 
+     * several vt from two objects from one and the same file
+     * @throws IOException
+     * Test passed!
+     */
+    @Test
+    public void testGetVertexesByNumbersVtCase() throws IOException {
+    	List<Integer> numbers = Arrays.asList(Integer.valueOf(1),Integer.valueOf(8));
+    	// numbers of textures from second object
+    	List<Integer> vtNumbersFirstObject = Arrays.asList(Integer.valueOf(1),Integer.valueOf(1));
+    	List<Integer> vtNumbersSecondObject = Arrays.asList(Integer.valueOf(5),Integer.valueOf(8));
+    	List<String> vertexes = utils.getVertexesByNumbers(System.getProperty("user.dir") + "/src/test/resources/testVtCase.obj", numbers, "v");
+    	
+    	List<String> vTextures1 = utils.getVertexesByNumbers(System.getProperty("user.dir") + "/src/test/resources/testVtCase.obj", vtNumbersFirstObject, "vt");
+    	List<String> vTextures2 = utils.getVertexesByNumbers(System.getProperty("user.dir") + "/src/test/resources/testVtCase.obj", vtNumbersSecondObject, "vt");
+    	
+    	Assert.assertTrue(vertexes.size() == 2);
+    	Assert.assertTrue(vertexes.get(0).equals("v 1.000001 0.000001 0.000001"));
+    	Assert.assertTrue(vertexes.get(1).equals("v 0.000001 0.000001 1.000001"));
+    	
+    	Assert.assertTrue(vTextures2.size() == 2);
+    	Assert.assertTrue(vTextures2.get(0).equals("vt 0.000000 2.000000"));
+    	Assert.assertTrue(vTextures2.get(1).equals("vt 0.000000 0.000000"));
+    }
+    //TODO check if there is another problem with textures (vt) 
+    
+    
     
     @Test
     public void testProcessFaceToNewForm() {
@@ -97,6 +126,14 @@ public class WaveFrontUtilsTest {
     			Integer.valueOf(8),
     			Integer.valueOf(9))), "f 1/6 1/8 1/9", 1);
     	Assert.assertTrue(result.equals("f 1/3 1/4 1/5"));    	
+    }
+    //TODO  
+    /**
+     * Test of rewriting faces in case of 
+     */
+    @Test
+    public void testProcessFacesToNewFormVTCase() {
+    	
     }
     
     @Test
